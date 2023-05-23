@@ -9,7 +9,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::process_info;
 
-#[cfg(all(not(feature = "heappy"), feature = "jemalloc_replacing_malloc"))]
+#[cfg(all(not(feature = "heappy"), feature = "jemalloc_replacing_malloc", unix))]
 mod jemalloc;
 
 #[derive(Debug, Snafu)]
@@ -29,7 +29,7 @@ impl From<ioxd_common::Error> for Error {
     }
 }
 
-#[cfg(all(not(feature = "heappy"), not(feature = "jemalloc_replacing_malloc")))]
+#[cfg(any(all(not(feature = "heappy"), not(feature = "jemalloc_replacing_malloc")), not(unix)))]
 fn build_malloc_conf() -> String {
     "system".to_string()
 }
@@ -39,7 +39,7 @@ fn build_malloc_conf() -> String {
     "heappy".to_string()
 }
 
-#[cfg(all(not(feature = "heappy"), feature = "jemalloc_replacing_malloc"))]
+#[cfg(all(not(feature = "heappy"), feature = "jemalloc_replacing_malloc", unix))]
 fn build_malloc_conf() -> String {
     tikv_jemalloc_ctl::config::malloc_conf::mib()
         .unwrap()
@@ -111,7 +111,7 @@ pub async fn main(
     std::mem::forget(f);
 
     // Register jemalloc metrics
-    #[cfg(all(not(feature = "heappy"), feature = "jemalloc_replacing_malloc"))]
+    #[cfg(all(not(feature = "heappy"), feature = "jemalloc_replacing_malloc", unix))]
     for service in &services {
         service
             .server_type

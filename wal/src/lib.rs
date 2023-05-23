@@ -242,10 +242,13 @@ impl Wal {
 
         // ensure the directory creation is actually fsync'd so that when we create files there
         // we don't lose them (see: https://www.usenix.org/system/files/conference/osdi14/osdi14-paper-pillai.pdf)
-        File::open(&root)
+        // NOTE: Opening directories works on Unix only.
+        if cfg!(unix) {
+            File::open(&root)
             .expect("should be able to open just-created directory")
             .sync_all()
             .expect("fsync failure");
+        }
 
         let mut dir = tokio::fs::read_dir(&root)
             .await
