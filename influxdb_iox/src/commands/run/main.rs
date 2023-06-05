@@ -29,7 +29,10 @@ impl From<ioxd_common::Error> for Error {
     }
 }
 
-#[cfg(any(all(not(feature = "heappy"), not(feature = "jemalloc_replacing_malloc")), not(unix)))]
+#[cfg(any(
+    all(not(feature = "heappy"), not(feature = "jemalloc_replacing_malloc")),
+    not(unix)
+))]
 fn build_malloc_conf() -> String {
     "system".to_string()
 }

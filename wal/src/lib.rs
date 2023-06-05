@@ -245,9 +245,9 @@ impl Wal {
         // NOTE: Opening directories works on Unix only.
         if cfg!(unix) {
             File::open(&root)
-            .expect("should be able to open just-created directory")
-            .sync_all()
-            .expect("fsync failure");
+                .expect("should be able to open just-created directory")
+                .sync_all()
+                .expect("fsync failure");
         }
 
         let mut dir = tokio::fs::read_dir(&root)

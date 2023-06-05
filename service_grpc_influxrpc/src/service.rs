@@ -2607,8 +2607,8 @@ mod tests {
         grpc_request_metric_has_count(&fixture, "MeasurementTagValues", "server_error", 1);
     }
 
-   #[cfg(unix)]
-   procspawn::enable_test_support!();
+    #[cfg(unix)]
+    procspawn::enable_test_support!();
 
     #[cfg(unix)]
     #[test]
