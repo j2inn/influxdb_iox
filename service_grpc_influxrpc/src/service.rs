@@ -1730,7 +1730,6 @@ mod tests {
     };
     use iox_query::test::TestChunk;
     use metric::{Attributes, Metric, U64Counter, U64Gauge};
-    use panic_logging::SendPanicsToTracing;
     use service_common::test_util::TestDatabaseStore;
     use std::{
         any::Any,
@@ -1738,7 +1737,7 @@ mod tests {
         num::NonZeroU64,
         sync::Arc,
     };
-    use test_helpers::{assert_contains, maybe_start_logging, tracing::TracingCapture};
+    use test_helpers::{assert_contains, maybe_start_logging};
     use tokio::{pin, task::JoinHandle};
     use tokio_stream::wrappers::TcpListenerStream;
 
@@ -2608,8 +2607,10 @@ mod tests {
         grpc_request_metric_has_count(&fixture, "MeasurementTagValues", "server_error", 1);
     }
 
-    procspawn::enable_test_support!();
+   #[cfg(unix)]
+   procspawn::enable_test_support!();
 
+    #[cfg(unix)]
     #[test]
     fn test_log_on_panic() {
         // libtest (i.e. the standard library test fixture) sets panic hooks. This will race w/ our own panic hooks. To
@@ -2630,7 +2631,11 @@ mod tests {
         .unwrap();
     }
 
+    #[cfg(unix)]
     async fn test_log_on_panic_inner() {
+        use panic_logging::SendPanicsToTracing;
+        use test_helpers::tracing::TracingCapture;
+
         // Send a message to a route that causes a panic and ensure:
         // 1. We don't use up all executors 2. The panic message
         // message ends up in the log system

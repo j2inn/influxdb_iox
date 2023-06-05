@@ -634,6 +634,7 @@ fn server_dead_inner(server_process: &mut Process) -> bool {
 }
 
 /// Attempt to kill a child process politely.
+#[cfg(unix)]
 fn kill_politely(child: &mut Child, wait: Duration) {
     use nix::{
         sys::{
@@ -669,7 +670,16 @@ fn kill_politely(child: &mut Child, wait: Duration) {
     }
 }
 
+#[cfg(windows)]
+fn kill_politely(child: &mut Child, _wait: Duration) {
+    // Use the standard kill function of Child. Not very polite though.
+    if let Err(e) = child.kill().and_then(|_| child.wait()) {
+        info!("Child was not running: {e}");
+    }
+}
+
 /// Wait for given PID to exit with a timeout.
+#[cfg(unix)]
 fn wait_timeout(pid: nix::unistd::Pid, timeout: Duration) -> Result<(), ()> {
     use nix::sys::wait::waitpid;
 
