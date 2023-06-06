@@ -258,11 +258,12 @@ mod tests {
         assert_count(&metrics, "offset_overflow", 2);
         assert_count(&metrics, "unknown", 1);
 
+        let path = file!();
         assert_eq!(
             capture.to_string(),
-            "level = ERROR; message = Thread panic; panic_type = \"unknown\"; panic_info = panicked at 'it's bananas', panic_logging/src/lib.rs:227:13; \n\
-             level = ERROR; message = Thread panic; panic_type = \"offset_overflow\"; panic_info = panicked at 'offset', panic_logging/src/lib.rs:235:13; \n\
-             level = ERROR; message = Thread panic; panic_type = \"offset_overflow\"; panic_info = panicked at 'offset overflow', panic_logging/src/lib.rs:244:13; "
+            format!("level = ERROR; message = Thread panic; panic_type = \"unknown\"; panic_info = panicked at 'it's bananas', {path}:227:13; \n\
+             level = ERROR; message = Thread panic; panic_type = \"offset_overflow\"; panic_info = panicked at 'offset', {path}:235:13; \n\
+             level = ERROR; message = Thread panic; panic_type = \"offset_overflow\"; panic_info = panicked at 'offset overflow', {path}:244:13; ")
         );
     }
 }
