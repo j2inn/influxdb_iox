@@ -37,6 +37,8 @@ async fn assert_panic_logging(connection: Connection, log_path: Box<Path>) {
 
     // check logs
     let logs = std::fs::read_to_string(log_path).unwrap();
-    let expected_error = "'This is a test panic', service_grpc_testing/src/lib.rs:";
+    // Replace slashes with backslashes on Windows.
+    let path = "service_grpc_testing/src/lib.rs".replace(|c| cfg!(windows) && c == '/', "\\");
+    let expected_error = format!("'This is a test panic', {path}:");
     assert_contains!(logs, expected_error);
 }
