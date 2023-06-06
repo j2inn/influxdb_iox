@@ -12,10 +12,19 @@ async fn ingester2_runs_ingester() {
     let tmpdir = tempdir().unwrap();
     let addrs = BindAddresses::default();
 
-    Command::cargo_bin("influxdb_iox")
-        .unwrap()
+    let mut command = Command::cargo_bin("influxdb_iox").unwrap();
+
+    if cfg!(not(windows)) {
+        // Only clear the environment on non Windows platforms. On Windows, the SYSTEMROOT environment variable must be
+        // preserved for DLLs to correctly load, otherwise the OS error WSAEPROVIDERFAILEDINIT (10106) is thrown when
+        // attempting to bind the TCP listener. See:
+        // https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+        // https://travis-ci.community/t/socket-the-requested-service-provider-could-not-be-loaded-or-initialized/1127/1
+        command.env_clear();
+    }
+
+    command
         .args(["run", "ingester2", "-v"])
-        .env_clear()
         .env("HOME", tmpdir.path())
         .env("INFLUXDB_IOX_WAL_DIRECTORY", tmpdir.path())
         .env("INFLUXDB_IOX_CATALOG_DSN", "memory")
@@ -34,10 +43,19 @@ async fn router2_runs_router() {
     let tmpdir = tempdir().unwrap();
     let addrs = BindAddresses::default();
 
-    Command::cargo_bin("influxdb_iox")
-        .unwrap()
+    let mut command = Command::cargo_bin("influxdb_iox").unwrap();
+
+    if cfg!(not(windows)) {
+        // Only clear the environment on non Windows platforms. On Windows, the SYSTEMROOT environment variable must be
+        // preserved for DLLs to correctly load, otherwise the OS error WSAEPROVIDERFAILEDINIT (10106) is thrown when
+        // attempting to bind the TCP listener. See:
+        // https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+        // https://travis-ci.community/t/socket-the-requested-service-provider-could-not-be-loaded-or-initialized/1127/1
+        command.env_clear();
+    }
+
+    command
         .args(["run", "router2", "-v"])
-        .env_clear()
         .env("HOME", tmpdir.path())
         .env("INFLUXDB_IOX_WAL_DIRECTORY", tmpdir.path())
         .env("INFLUXDB_IOX_CATALOG_DSN", "memory")
@@ -54,10 +72,19 @@ async fn compactor2_runs_compactor() {
     let tmpdir = tempdir().unwrap();
     let addrs = BindAddresses::default();
 
-    Command::cargo_bin("influxdb_iox")
-        .unwrap()
+    let mut command = Command::cargo_bin("influxdb_iox").unwrap();
+
+    if cfg!(not(windows)) {
+        // Only clear the environment on non Windows platforms. On Windows, the SYSTEMROOT environment variable must be
+        // preserved for DLLs to correctly load, otherwise the OS error WSAEPROVIDERFAILEDINIT (10106) is thrown when
+        // attempting to bind the TCP listener. See:
+        // https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+        // https://travis-ci.community/t/socket-the-requested-service-provider-could-not-be-loaded-or-initialized/1127/1
+        command.env_clear();
+    }
+
+    command
         .args(["run", "compactor2", "-v"])
-        .env_clear()
         .env("HOME", tmpdir.path())
         .env("INFLUXDB_IOX_WAL_DIRECTORY", tmpdir.path())
         .env("INFLUXDB_IOX_CATALOG_DSN", "memory")
