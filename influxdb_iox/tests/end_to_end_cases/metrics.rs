@@ -41,7 +41,7 @@ pub async fn test_metrics() {
     .await;
 }
 
-#[cfg(feature = "jemalloc_replacing_malloc")]
+#[cfg(all(feature = "jemalloc_replacing_malloc", unix))]
 #[tokio::test]
 pub async fn test_jemalloc_metrics() {
     use test_helpers::assert_contains;
