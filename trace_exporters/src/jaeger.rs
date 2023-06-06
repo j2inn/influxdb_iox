@@ -318,7 +318,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_jaeger() {
-        let server = UdpSocket::bind("0.0.0.0:0").unwrap();
+        // This the server the JaegerAgent will try to connect to. The IP shouldn't be 0.0.0.0, but a specific one; otherwise
+        // sockets on Windows will refuse to establish the connection (OS error 10049). On Unix, this isn't an issue.
+        // Port is 0 to bind to any available port.
+        let server = UdpSocket::bind("127.0.0.1:0").unwrap();
+
         server
             .set_read_timeout(Some(std::time::Duration::from_secs(1)))
             .unwrap();
