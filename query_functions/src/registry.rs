@@ -7,7 +7,7 @@ use datafusion::{
 };
 use once_cell::sync::Lazy;
 
-use crate::{gapfill, regex, window};
+use crate::{gapfill, regex, window, totalize};
 
 static REGISTRY: Lazy<IOxFunctionRegistry> = Lazy::new(IOxFunctionRegistry::new);
 
@@ -30,6 +30,7 @@ impl FunctionRegistry for IOxFunctionRegistry {
             regex::REGEX_MATCH_UDF_NAME,
             regex::REGEX_NOT_MATCH_UDF_NAME,
             window::WINDOW_BOUNDS_UDF_NAME,
+            totalize::TOTALIZE_UDF_NAME,
         ]
         .into_iter()
         .map(|s| s.to_string())
@@ -44,6 +45,7 @@ impl FunctionRegistry for IOxFunctionRegistry {
             regex::REGEX_MATCH_UDF_NAME => Ok(regex::REGEX_MATCH_UDF.clone()),
             regex::REGEX_NOT_MATCH_UDF_NAME => Ok(regex::REGEX_NOT_MATCH_UDF.clone()),
             window::WINDOW_BOUNDS_UDF_NAME => Ok(window::WINDOW_BOUNDS_UDF.clone()),
+            totalize::TOTALIZE_UDF_NAME => Ok(totalize::TOTALIZE.clone()),
             _ => Err(DataFusionError::Plan(format!(
                 "IOx FunctionRegistry does not contain function '{name}'"
             ))),

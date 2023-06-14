@@ -37,6 +37,8 @@ pub mod selectors;
 /// window_bounds expressions
 mod window;
 
+mod totalize;
+
 pub mod gapfill;
 
 /// Function registry
