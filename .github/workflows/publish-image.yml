@@ -1,9 +1,9 @@
-name: Create and publish a Docker image
+name: Publish Docker image
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: Version (e.g. 0.1.0)
+      semver:
+        description: Semantic versioning
         required: true
 
 # These environment variables are used for the Container registry domain, and a name for the Docker image.
@@ -18,11 +18,9 @@ jobs:
     permissions:
       contents: read
       packages: write
-      # 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      # Log in to the Container registry registry using the account and password that will publish the packages.
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -36,7 +34,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ inputs.version }}
+            type=raw,value=${{ inputs.semver }}
             # set latest tag for default branch
             type=raw,value=latest,enable={{is_default_branch}}
       # Build and push image.
@@ -46,5 +44,7 @@ jobs:
         with:
           context: docker
           push: true
+          build-args: |
+            INFLUXDB_VERSION=${{ inputs.semver }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
